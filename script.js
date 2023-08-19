@@ -46,6 +46,7 @@ $.getJSON("https://api.ipify.org?format=json", function (data) {
 firstBtn.addEventListener("click", async () => {
   fPC.remove();
   let  data = await getGeoDetails();
+	console.log(data)
   let sPC = document.createElement("div");
 sPC.innerHTML = `
 <div id="ipAddressSec">
