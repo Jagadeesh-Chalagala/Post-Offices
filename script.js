@@ -23,23 +23,46 @@ fPC.innerHTML = `
 `;
 
 fPC.id = "firstpageContainer";
-let sPC = document.createElement("div");
+
+main.appendChild(fPC);
+
+let myIpAddress = "";
+let firstBtn = document.getElementById("btn");
+
+/* Add "https://api.ipify.org?format=json" statement
+			this will communicate with the ipify servers in
+			order to retrieve the IP address $.getJSON will
+			load JSON-encoded data from the server using a
+			GET HTTP request */
+
+$.getJSON("https://api.ipify.org?format=json", function (data) {
+  // Setting text of element P with id gfg
+  $("#firstpageContainerRight strong").html(data.ip);
+  myIpAddress = data.ip;
+});
+
+// ************ Event Listeners***************
+
+firstBtn.addEventListener("click", async () => {
+  fPC.remove();
+  let  data = await getGeoDetails();
+  let sPC = document.createElement("div");
 sPC.innerHTML = `
 <div id="ipAddressSec">
-  <h2>IP Address : <strong></strong></h2>
+  <h2>IP Address : <strong>${data.ip}</strong></h2>
   <div>
-    <h2>Lat : <strong></strong></h2>
-    <h2>City : <strong></strong></h2>
-    <h2>Organisation : <strong></strong></h2>
-    <h2>Long : <strong></strong></h2>
-    <h2>Region : <strong></strong></h2>
-    <h2>Hostname : <strong></strong></h2>
+    <h2>Lat : <strong>${data.loc.split(",")[0]}</strong></h2>
+    <h2>City : <strong>${data.city}</strong></h2>
+    <h2>Organisation : <strong>${data.org}</strong></h2>
+    <h2>Long : <strong>${data.loc.split(",")[1]}</strong></h2>
+    <h2>Region : <strong>${data.region}</strong></h2>
+    <h2>Hostname : <strong>${data.hostname}</strong></h2>
   </div>
 </div>
 <div id="currLocationSec">
   <h1>Your Current Location</h1>
   <iframe
-    src="https://maps.google.com/maps?q=12.740327, 80.001296&z=15&output=embed"
+    src="https://maps.google.com/maps?q=${data.loc.split(",")[0]}, ${data.loc.split(",")[1]}&z=15&output=embed"
     width="360"
     height="270"
     frameborder="0"
@@ -49,9 +72,9 @@ sPC.innerHTML = `
 <div id="mIAU">
     <h1>More Information About You</h1>
     <div>
-        <h2>Time Zone : <strong></strong></h2>
-        <h2>Date And Time : <strong></strong></h2>
-        <h2>Pincode : <strong></strong></h2>
+        <h2>Time Zone : <strong>${data.timezone}</strong></h2>
+        <h2>Date And Time : <strong>${new Date().toLocaleString("en-US", { timeZone: data.timeZone })}</strong></h2>
+        <h2>Pincode : <strong>${data.postal}</strong></h2>
         <h2>Message : <p>Number of pincode(s) found: </p><strong></strong></h2>
     </div>
 </div>
@@ -174,28 +197,6 @@ sPC.innerHTML = `
 `;
 
 sPC.id = "secondPageContainer";
-main.appendChild(fPC);
-
-let myIpAddress = "";
-let firstBtn = document.getElementById("btn");
-
-/* Add "https://api.ipify.org?format=json" statement
-			this will communicate with the ipify servers in
-			order to retrieve the IP address $.getJSON will
-			load JSON-encoded data from the server using a
-			GET HTTP request */
-
-$.getJSON("https://api.ipify.org?format=json", function (data) {
-  // Setting text of element P with id gfg
-  $("#firstpageContainerRight strong").html(data.ip);
-  myIpAddress = data.ip;
-});
-
-// ************ Event Listeners***************
-
-firstBtn.addEventListener("click", async () => {
-  fPC.remove();
-  await getGeoDetails();
   main.appendChild(sPC);
 });
 
@@ -205,6 +206,7 @@ async function getGeoDetails(){
     let response = await fetch(url);
     let result = await response.json();
     console.log(result);
+    return result
 }
 
 navigator.lo
